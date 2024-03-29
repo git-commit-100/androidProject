@@ -59,9 +59,13 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        if(!TextUtils.isEmpty(emailFromRegister)){
+        if (!TextUtils.isEmpty(emailFromRegister)) {
             loginEmail.setText(emailFromRegister);
         }
+
+        // setting inputs to automate login
+        loginEmail.setText("bhargav@gmail.com");
+        loginPassword.setText("Bhargav@123");
 
     }
 

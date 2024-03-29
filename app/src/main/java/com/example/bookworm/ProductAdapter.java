@@ -1,6 +1,7 @@
 package com.example.bookworm;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,12 +36,28 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         Product product = productList.get(position);
         holder.textViewTitle.setText(product.getTitle());
         holder.textViewDescription.setText(product.getDescription());
-        holder.textViewPrice.setText("$" + product.getPrice());
+        holder.textViewPrice.setText(String.format("$ %.02f", product.getPrice()));
 
         // Load image using Glide library
         Glide.with(context)
                 .load(product.getImgUrl())
                 .into(holder.imageViewProduct);
+
+        // Set OnClickListener to handle product item click
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create intent to start ProductDetailsActivity
+                Intent intent = new Intent(context, ProductDetailsActivity.class);
+                // Pass product details as extras
+                intent.putExtra("title", product.getTitle());
+                intent.putExtra("description", product.getDescription());
+                intent.putExtra("price", product.getPrice());
+                intent.putExtra("imgUrl", product.getImgUrl());
+                // Start activity
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
