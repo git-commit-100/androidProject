@@ -1,4 +1,4 @@
-package com.example.bookworm;
+package com.example.bookworm.utilities;
 
 public class Product {
     private String title;

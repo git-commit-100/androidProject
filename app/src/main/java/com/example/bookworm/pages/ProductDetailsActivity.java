@@ -1,19 +1,24 @@
-package com.example.bookworm;
+package com.example.bookworm.pages;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.bookworm.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 public class ProductDetailsActivity extends AppCompatActivity {
 
+    BottomNavigationView bottomNavigationView;
     TextView productTitle, productDescription, productPrice;
-    ImageView productImg, backImg;
+    ImageView productImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,14 +49,27 @@ public class ProductDetailsActivity extends AppCompatActivity {
                     .load(imgUrl)
                     .into(productImg);
 
-            // back button
-            backImg = findViewById(R.id.backImg);
-            backImg.setOnClickListener(new View.OnClickListener() {
+            // bottom nav
+            bottomNavigationView = findViewById(R.id.bottom_navigation);
+            bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
                 @Override
-                public void onClick(View v) {
-                    finish();
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    int ID = item.getItemId();
+                    bottomNavigationView.getMenu().findItem(ID).setChecked(true);
+                    if (ID == R.id.productsItem) {
+                        startActivity(new Intent(ProductDetailsActivity.this, ProductsActivity.class));
+                        return true;
+                    } else if (ID == R.id.cartItem) {
+                        startActivity(new Intent(ProductDetailsActivity.this, CartActivity.class));
+                        return true;
+                    } else {
+                        startActivity(new Intent(ProductDetailsActivity.this, AccountActivity.class));
+                    }
+                    return false;
                 }
             });
+
+
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.bookworm;
+package com.example.bookworm.utilities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.bookworm.R;
+import com.example.bookworm.pages.ProductDetailsActivity;
 
 import java.util.List;
 
