@@ -1,4 +1,4 @@
-package com.example.bookworm;
+package com.example.bookworm.pages;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -13,7 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.bookworm.pages.ProductsActivity;
+import com.example.bookworm.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
@@ -56,18 +56,63 @@ public class LoginActivity extends AppCompatActivity {
         btnSubmitLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                validateLoginForm();
+
+                boolean isValid = true;
+
+                String email = loginEmail.getText().toString().trim();
+                String password = loginPassword.getText().toString().trim();
+
+                // hide error
+                loginError.setVisibility(View.GONE);
+                loginError.setText("");
+
+                // check for empty field
+                if (TextUtils.isEmpty(email) || !isValidEmail(email)) {
+                    loginEmail.setError("Please enter a valid email");
+                    isValid = false;
+                }
+
+                if (TextUtils.isEmpty(password) || !isValidPassword(password)) {
+                    loginPassword.setError("Please enter a valid password");
+                    isValid = false;
+                }
+
+
+                if (!isValid) {
+                    loginError.setVisibility(View.VISIBLE);
+                    loginError.setText("Please correct the errors in the form.");
+                } else {
+                    loginError.setText("Looks good !");
+                    loginError.setTextColor(Color.parseColor("#006400"));
+                    loginError.setVisibility(View.VISIBLE);
+
+                    mAuth.signInWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        // Sign in success, update UI with the signed-in user's information
+                                        Toast.makeText(LoginActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
+                                        Intent goToProducts = new Intent(LoginActivity.this, ProductsActivity.class);
+                                        startActivity(goToProducts);
+                                    } else {
+                                        // If sign in fails, display a message to the user.
+                                        Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                }
             }
         });
 
+        // set email from register page
         if (!TextUtils.isEmpty(emailFromRegister)) {
             loginEmail.setText(emailFromRegister);
         }
-
         // setting inputs to automate login
         loginEmail.setText("bhargav@gmail.com");
         loginPassword.setText("Bhargav@123");
-
     }
 
     // validate email using regex
@@ -83,45 +128,4 @@ public class LoginActivity extends AppCompatActivity {
         return pattern.matcher(password).matches();
     }
 
-    public void validateLoginForm(){
-        String email = loginEmail.getText().toString().trim();
-        String password = loginPassword.getText().toString().trim();
-
-        // hide error
-        loginError.setVisibility(View.GONE);
-
-        // check for empty field
-        if(TextUtils.isEmpty(email) || !isValidEmail(email)){
-            loginError.setText("Please enter a valid email");
-            loginError.setVisibility(View.VISIBLE);
-            return;
-        }
-
-        if(TextUtils.isEmpty(password) || !isValidPassword(password)){
-            loginError.setText("Please enter a valid password");
-            loginError.setVisibility(View.VISIBLE);
-            return;
-        }
-
-        loginError.setText("Looks good !");
-        loginError.setTextColor(Color.parseColor("#006400"));
-        loginError.setVisibility(View.VISIBLE);
-
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Toast.makeText(LoginActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
-                            Intent goToProducts = new Intent(LoginActivity.this, ProductsActivity.class);
-                            startActivity(goToProducts);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
 }

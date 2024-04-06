@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".pages.LoginActivity">
 
     <TextView
         android:id="@+id/loginHeader"
@@ -24,7 +24,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="34dp"
         android:layout_marginEnd="34dp"
         android:layout_marginBottom="230dp"
@@ -43,7 +43,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="25dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginBottom="2dp"
+            android:layout_marginBottom="10dp"
             app:layout_constraintBottom_toTopOf="@+id/loginPasswordLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -65,7 +65,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginBottom="2dp"
             app:layout_constraintBottom_toTopOf="@+id/loginError"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -84,10 +83,11 @@
 
         <TextView
             android:id="@+id/loginError"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:textAlignment="center"
             android:textColor="@color/errorColor"
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/btnSubmitLogin"
