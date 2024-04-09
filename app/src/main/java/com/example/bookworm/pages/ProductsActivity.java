@@ -1,20 +1,22 @@
-package com.example.bookworm;
+package com.example.bookworm.pages;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.example.bookworm.R;
+import com.example.bookworm.utilities.Product;
+import com.example.bookworm.utilities.ProductAdapter;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +28,7 @@ import java.util.List;
 
 public class ProductsActivity extends AppCompatActivity {
 
+    BottomNavigationView bottomNavigationView;
     TextView userEmail;
     ImageView logout;
     private RecyclerView recyclerView;
@@ -42,8 +45,25 @@ public class ProductsActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        userEmail = findViewById(R.id.userEmalTextView);
-        logout = findViewById(R.id.logout);
+        // bottom nav
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.getMenu().findItem(R.id.productsItem).setChecked(true);
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int ID = item.getItemId();
+                bottomNavigationView.getMenu().findItem(ID).setChecked(true);
+                if (ID == R.id.productsItem) {
+                    return true;
+                } else if (ID == R.id.cartItem) {
+                    startActivity(new Intent(ProductsActivity.this, CartActivity.class));
+                    return true;
+                } else {
+                    startActivity(new Intent(ProductsActivity.this, AccountActivity.class));
+                }
+                return false;
+            }
+        });
 
         // Initialize productList
         productList = new ArrayList<>();
@@ -71,26 +91,5 @@ public class ProductsActivity extends AppCompatActivity {
         // Initialize and set adapter for RecyclerView
         adapter = new ProductAdapter(this, productList);
         recyclerView.setAdapter(adapter);
-
-        // Retrieve user email from FirebaseAuth
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            String email = user.getEmail();
-            // display user email
-            userEmail.setText("Hello " + email + " !");
-        }
-
-        // logout handler
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // logout
-                FirebaseAuth.getInstance().signOut();
-                // switch to mainActivity
-                Intent goToMain = new Intent(ProductsActivity.this, MainActivity.class);
-                startActivity(goToMain);
-                Toast.makeText(ProductsActivity.this, "Logout successful", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 }

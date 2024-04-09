@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/productsItem"
+        android:enabled="true"
+        android:icon="@drawable/books"
+        android:title="Books" />
+    <item
+        android:id="@+id/cartItem"
+        android:enabled="true"
+        android:icon="@drawable/cart"
+        android:title="Cart" />
+    <item
+        android:id="@+id/accountItem"
+        android:enabled="true"
+        android:icon="@drawable/account"
+        android:title="My Account" />
+</menu>

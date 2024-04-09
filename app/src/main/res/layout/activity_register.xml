@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegisterActivity">
+    tools:context=".pages.RegisterActivity">
 
     <TextView
         android:id="@+id/registerHeader"
@@ -123,16 +123,17 @@
 
         <TextView
             android:id="@+id/registerError"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="28dp"
-            android:layout_marginBottom="16dp"
             android:text="TextView"
+            android:textAlignment="center"
             android:textColor="@color/errorColor"
             android:textSize="16sp"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/btnSubmitRegister"
-            app:layout_constraintEnd_toEndOf="@+id/btnSubmitRegister" />
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout4"
+            app:layout_constraintVertical_bias="0.55"
+            tools:layout_editor_absoluteX="10dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
