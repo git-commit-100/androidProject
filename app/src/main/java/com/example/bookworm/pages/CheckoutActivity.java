@@ -2,6 +2,7 @@ package com.example.bookworm.pages;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,18 +13,26 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.bookworm.R;
+import com.example.bookworm.utilities.CartItem;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class CheckoutActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigationView;
-
+    Double priceToPay;
     TextInputEditText name, email, address, city, postal, cardHolderName, cardNumber, expiry, security;
     Button btnSubmitCheckout;
 
@@ -33,8 +42,6 @@ public class CheckoutActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkout);
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         name = findViewById(R.id.checkoutName);
         email = findViewById(R.id.checkoutEmail);
@@ -48,8 +55,14 @@ public class CheckoutActivity extends AppCompatActivity {
         btnSubmitCheckout = findViewById(R.id.btnSubmitCheckout);
         formError = findViewById(R.id.checkoutFormError);
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         // set email to user email
         email.setText(user.getEmail());
+
+        Intent i = getIntent();
+        double priceToPay = i.getDoubleExtra("priceToPay", 0.0);
+
+        Log.i("Price", String.format("%.2f", priceToPay));
 
         btnSubmitCheckout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,7 +110,7 @@ public class CheckoutActivity extends AppCompatActivity {
                 }
 
                 // Postal code validation
-                if (postalValue.isEmpty() || !Pattern.matches("^\\d{5}(?:[-\\s]\\d{4})?$", postalValue)) {
+                if (postalValue.isEmpty() || !Pattern.matches("^[A-Za-z0-9]{3}[\\s]{0,1}[a-zA-Z0-9]{3}$", postalValue)) {
                     postal.setError("Please enter a valid postal code");
                     isValid = false;
                 }
@@ -132,7 +145,50 @@ public class CheckoutActivity extends AppCompatActivity {
                     formError.setText("Please correct the errors in the form.");
                 } else {
                     // All fields are valid, proceed with submission
-                    // Your submission logic here
+                    // Make an order node
+                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    DatabaseReference cartRef = FirebaseDatabase.getInstance().getReference("cart").child(userId);
+                    DatabaseReference orderRef = FirebaseDatabase.getInstance().getReference("orders").child(userId).push();
+                    // Get the cart items as a list
+                    cartRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            List<CartItem> itemList = new ArrayList<>();
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                CartItem cartItem = snapshot.getValue(CartItem.class);
+                                cartItem.setId(snapshot.getKey());
+                                itemList.add(cartItem);
+                            }
+
+                            // Set the value of the "items" node to the list of cart items
+                            orderRef.child("items").setValue(itemList);
+
+                            // Set the value of the "priceToPay" field to the calculated price
+                            orderRef.child("amount").setValue(priceToPay);
+
+                            // set user info
+                            orderRef.child("userInfo").child("name").setValue(nameValue);
+                            orderRef.child("userInfo").child("email").setValue(emailValue);
+                            orderRef.child("userInfo").child("address").setValue(addressValue);
+                            orderRef.child("userInfo").child("city").setValue(cityValue);
+                            orderRef.child("userInfo").child("postalCode").setValue(postalValue);
+                            orderRef.child("userInfo").child("cardHolderName").setValue(cardHolderNameValue);
+                            orderRef.child("userInfo").child("cardNumber").setValue(cardNumberValue);
+                            orderRef.child("userInfo").child("expiry").setValue(expiryValue);
+                            orderRef.child("userInfo").child("securityCode").setValue(securityValue);
+
+                            // clear user cart
+                            cartRef.removeValue();
+
+                            // go to thank you page
+                            startActivity(new Intent(CheckoutActivity.this, ThankYouActivity.class));
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.e("CheckoutActivity", "Failed to retrieve cart items: " + databaseError.getMessage());
+                        }
+                    });
                 }
             }
         });
@@ -152,6 +208,8 @@ public class CheckoutActivity extends AppCompatActivity {
                 } else if (ID == R.id.accountItem) {
                     startActivity(new Intent(CheckoutActivity.this, AccountActivity.class));
                     return true;
+                } else {
+                    startActivity(new Intent(CheckoutActivity.this, CartActivity.class));
                 }
                 return false;
             }

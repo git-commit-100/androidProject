@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -38,7 +37,7 @@ public class CartActivity extends AppCompatActivity {
     Button btnGoToBooks, btnPlaceOrder;
     RecyclerView recyclerView;
     BottomNavigationView bottomNavigationView;
-    double totalPrice, taxPrice, priceToPay;
+    public double totalPrice, taxPrice, priceToPay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +48,6 @@ public class CartActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewCart);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        TextView emptyCart = findViewById(R.id.emptyCart);
-        ScrollView cartView = findViewById(R.id.scrollView4);
 
         // cart has items
         btnGoToBooks = findViewById(R.id.btnGoToProducts);
@@ -71,7 +67,9 @@ public class CartActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // go to checkout page
-                startActivity(new Intent(CartActivity.this, CheckoutActivity.class));
+                Intent i = new Intent(CartActivity.this, CheckoutActivity.class);
+                i.putExtra("priceToPay", priceToPay);
+                startActivity(i);
             }
         });
 
@@ -80,34 +78,23 @@ public class CartActivity extends AppCompatActivity {
         bottomNavigationView.getMenu().findItem(R.id.cartItem).setChecked(true);
 
         cartItemList = new ArrayList<>();
-        // Retrieve cart items from Firebase Realtime Database
-        DatabaseReference cartRef = FirebaseDatabase.getInstance().getReference("cart");
-        cartRef.addValueEventListener(new ValueEventListener() {
+        // Retrieve cart items from Firebase Realtime Database based on user's UUID
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference userCartRef = FirebaseDatabase.getInstance().getReference("cart").child(userId);
+        userCartRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 cartItemList.clear();
-                String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     CartItem cartItem = snapshot.getValue(CartItem.class);
                     cartItem.setId(snapshot.getKey());
                     cartItemList.add(cartItem);
                 }
-                // calculate price and tax
-                for (CartItem cartItem : cartItemList) {
-                    double itemPrice = cartItem.getPrice() * cartItem.getQuantity();
-                    double tax = cartItem.getPrice() * cartItem.getQuantity() * 0.13;
-                    totalPrice += itemPrice;
-                    taxPrice += tax;
-                }
 
-                priceToPay = totalPrice + taxPrice;
-
-                taxTextView.setText(String.format("$ %.2f", taxPrice));
-                totalPriceTextView.setText(String.format("$ %.2f", totalPrice));
-                priceToPayTextView.setText(String.format("$ %.2f", priceToPay));
-
+                calculateTotalPriceAndTax();
                 // Pass cartItemList to the adapter and update RecyclerView
                 cartAdapter.notifyDataSetChanged();
+
             }
 
             @Override
@@ -136,5 +123,22 @@ public class CartActivity extends AppCompatActivity {
         // Initialize and set adapter for RecyclerView
         cartAdapter = new CartAdapter(this, cartItemList);
         recyclerView.setAdapter(cartAdapter);
+    }
+
+    public void calculateTotalPriceAndTax() {
+        totalPrice = 0;
+        taxPrice = 0;
+        for (CartItem book : cartItemList) {
+            double itemPrice = book.getPrice() * book.getQuantity();
+            double tax = book.getPrice() * book.getQuantity() * 0.13;
+            totalPrice += itemPrice;
+            taxPrice += tax;
+            priceToPay = totalPrice + taxPrice;
+
+            // Update TextViews with the recalculated values
+            taxTextView.setText(String.format("$ %.2f", taxPrice));
+            totalPriceTextView.setText(String.format("$ %.2f", totalPrice));
+            priceToPayTextView.setText(String.format("$ %.2f", priceToPay));
+        }
     }
 }

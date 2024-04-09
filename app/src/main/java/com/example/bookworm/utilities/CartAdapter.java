@@ -14,8 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.bookworm.R;
+import com.example.bookworm.pages.CartActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -43,6 +45,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemViewHo
 
     @Override
     public void onBindViewHolder(@NonNull CartItemViewHolder holder, int position) {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         CartItem cartItem = cartItemList.get(position);
 
         // Display the cart item
@@ -62,6 +65,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemViewHo
                 cartItem.setQuantity(updatedQuantity);
                 notifyItemChanged(position);
                 updateCartItem(cartItem);
+                // updating the prices as treating adapter as instance of activity class
+                ((CartActivity) context).calculateTotalPriceAndTax();
             }
         });
 
@@ -79,17 +84,21 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemViewHo
                     notifyItemChanged(position);
                     updateCartItem(cartItem);
                 }
+                ((CartActivity) context).calculateTotalPriceAndTax();
             }
         });
     }
 
     // Method to update the cart item in Firebase Realtime Database
     private void updateCartItem(CartItem cartItem) {
-        DatabaseReference cartRef = FirebaseDatabase.getInstance().getReference("cart");
-        cartRef.child(cartItem.getId()).setValue(cartItem)
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference userCartRef = FirebaseDatabase.getInstance().getReference("cart").child(userId);
+        userCartRef.child(cartItem.getId()).setValue(cartItem)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
+
                     @Override
                     public void onSuccess(Void aVoid) {
+
                         // Notify the adapter that the data has changed
                         notifyDataSetChanged();
                     }
@@ -104,8 +113,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartItemViewHo
 
     // Method to delete the cart item from Firebase Realtime Database
     private void deleteCartItem(CartItem cartItem) {
-        DatabaseReference cartRef = FirebaseDatabase.getInstance().getReference("cart");
-        cartRef.child(cartItem.getId()).removeValue()
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference userCartRef = FirebaseDatabase.getInstance().getReference("cart").child(userId);
+        userCartRef.child(cartItem.getId()).removeValue()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

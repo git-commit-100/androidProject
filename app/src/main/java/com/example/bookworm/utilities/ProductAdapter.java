@@ -19,6 +19,7 @@ import com.example.bookworm.R;
 import com.example.bookworm.pages.ProductDetailsActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -88,7 +89,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     }
 
     public void addProductToCart(DatabaseReference cartRef, Product product) {
-        Query query = cartRef.orderByChild("title").equalTo(product.getTitle());
+        // Get the current user's UUID
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // Create a reference to the user's cart
+        DatabaseReference userCartRef = cartRef.child(userId);
+
+        // Check if the product already exists in the user's cart
+        Query query = userCartRef.orderByChild("title").equalTo(product.getTitle());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -104,8 +112,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 } else {
                     // Product doesn't exist in the cart -> add it with quantity 1
                     product.setQuantity(1);
-                    String cartItemId = cartRef.push().getKey();
-                    cartRef.child(cartItemId).setValue(product)
+                    String cartItemId = userCartRef.push().getKey();
+                    userCartRef.child(cartItemId).setValue(product)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
@@ -129,6 +137,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             }
         });
     }
+
 
     @Override
     public int getItemCount() {

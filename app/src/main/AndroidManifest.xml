@@ -15,6 +15,9 @@
         android:theme="@style/Theme.Bookworm"
         tools:targetApi="31">
         <activity
+            android:name=".pages.ThankYouActivity"
+            android:exported="false" />
+        <activity
             android:name=".pages.CheckoutActivity"
             android:exported="false" />
         <activity
