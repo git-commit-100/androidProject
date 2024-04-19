@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,10 +34,11 @@ public class CartActivity extends AppCompatActivity {
 
     List<CartItem> cartItemList;
     CartAdapter cartAdapter;
-    TextView taxTextView, totalPriceTextView, priceToPayTextView;
+    TextView taxTextView, totalPriceTextView, priceToPayTextView, emptyCart;
     Button btnGoToBooks, btnPlaceOrder;
     RecyclerView recyclerView;
     BottomNavigationView bottomNavigationView;
+    ScrollView cartLayout;
     public double totalPrice, taxPrice, priceToPay;
 
     @Override
@@ -49,12 +51,13 @@ public class CartActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // cart has items
+        cartLayout = findViewById(R.id.scrollView4);
         btnGoToBooks = findViewById(R.id.btnGoToProducts);
         btnPlaceOrder = findViewById(R.id.btnPlaceOrder);
         taxTextView = findViewById(R.id.taxTextView);
         totalPriceTextView = findViewById(R.id.totalPriceTextView);
         priceToPayTextView = findViewById(R.id.priceToPay);
+        emptyCart = findViewById(R.id.emptyCart);
 
         btnGoToBooks.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,11 +93,16 @@ public class CartActivity extends AppCompatActivity {
                     cartItem.setId(snapshot.getKey());
                     cartItemList.add(cartItem);
                 }
-
-                calculateTotalPriceAndTax();
-                // Pass cartItemList to the adapter and update RecyclerView
-                cartAdapter.notifyDataSetChanged();
-
+                if (cartItemList.isEmpty()) {
+                    cartLayout.setVisibility(View.GONE);
+                    emptyCart.setVisibility(View.VISIBLE);
+                } else {
+                    cartLayout.setVisibility(View.VISIBLE);
+                    emptyCart.setVisibility(View.GONE);
+                    calculateTotalPriceAndTax();
+                    // Pass cartItemList to the adapter and update RecyclerView
+                    cartAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override

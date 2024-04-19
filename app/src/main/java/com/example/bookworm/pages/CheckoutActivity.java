@@ -62,8 +62,6 @@ public class CheckoutActivity extends AppCompatActivity {
         Intent i = getIntent();
         double priceToPay = i.getDoubleExtra("priceToPay", 0.0);
 
-        Log.i("Price", String.format("%.2f", priceToPay));
-
         btnSubmitCheckout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,7 +109,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
                 // Postal code validation
                 if (postalValue.isEmpty() || !Pattern.matches("^[A-Za-z0-9]{3}[\\s]{0,1}[a-zA-Z0-9]{3}$", postalValue)) {
-                    postal.setError("Please enter a valid postal code");
+                    postal.setError("Please enter a valid postal code, eg:X1Y2Z3");
                     isValid = false;
                 }
 
@@ -128,7 +126,7 @@ public class CheckoutActivity extends AppCompatActivity {
                 }
 
                 // Expiry date validation
-                if (expiryValue.isEmpty() || !Pattern.matches("^\\d{2}/\\d{2}$", expiryValue)) {
+                if (expiryValue.isEmpty() || !Pattern.matches("^(0[1-9]|1[0-2])\\/([0-9]{2})$", expiryValue)) {
                     expiry.setError("Please enter a valid expiry date (MM/YY)");
                     isValid = false;
                 }
@@ -174,8 +172,6 @@ public class CheckoutActivity extends AppCompatActivity {
                             orderRef.child("userInfo").child("postalCode").setValue(postalValue);
                             orderRef.child("userInfo").child("cardHolderName").setValue(cardHolderNameValue);
                             orderRef.child("userInfo").child("cardNumber").setValue(cardNumberValue);
-                            orderRef.child("userInfo").child("expiry").setValue(expiryValue);
-                            orderRef.child("userInfo").child("securityCode").setValue(securityValue);
 
                             // clear user cart
                             cartRef.removeValue();

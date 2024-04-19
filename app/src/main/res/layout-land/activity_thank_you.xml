@@ -25,8 +25,8 @@
         app:menu="@menu/bottom_navigation_menu" />
 
     <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="526dp"
+        android:layout_width="725dp"
+        android:layout_height="252dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -52,35 +52,35 @@
 
             <ImageView
                 android:id="@+id/imageView4"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="4dp"
+                android:layout_width="305dp"
+                android:layout_height="188dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="392dp"
                 android:src="@drawable/thankyou"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/thankYouHeader" />
 
             <TextView
                 android:id="@+id/textView4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="378dp"
+                android:layout_height="66dp"
                 android:layout_marginTop="20dp"
                 android:text="Your order has been successfully placed, thank you for choosing us! Expect your items to arrive soon, happy shopping!"
-                android:textAlignment="center"
+                android:textAlignment="textStart"
                 android:textSize="18sp"
-                app:layout_constraintTop_toBottomOf="@+id/imageView4"
-                tools:layout_editor_absoluteX="10dp" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/thankYouHeader" />
 
             <Button
                 android:id="@+id/btnContinueShopping"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="84dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="53dp"
                 android:backgroundTint="@color/buttonPrimary"
                 android:text="Continue Shopping"
                 android:textSize="20sp"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageView4"
                 app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
