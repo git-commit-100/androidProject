@@ -38,8 +38,8 @@
 
     <ScrollView
         android:id="@+id/scrollView4"
-        android:layout_width="match_parent"
-        android:layout_height="480dp"
+        android:layout_width="723dp"
+        android:layout_height="246dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.619"
@@ -140,6 +140,8 @@
                 android:backgroundTint="@color/buttonPrimary"
                 android:text="Place Order"
                 android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.98"
                 app:layout_constraintStart_toEndOf="@+id/btnGoToProducts"
                 app:layout_constraintTop_toBottomOf="@+id/priceToPay" />
 

@@ -23,12 +23,13 @@
         app:menu="@menu/bottom_navigation_menu" />
 
     <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="517dp"
+        android:layout_width="725dp"
+        android:layout_height="245dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/include"
-        app:layout_constraintVertical_bias="0.428"
-        tools:layout_editor_absoluteX="0dp">
+        app:layout_constraintVertical_bias="0.428">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
